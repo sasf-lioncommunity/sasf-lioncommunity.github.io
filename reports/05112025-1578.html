@@ -11035,7 +11035,7 @@
                                 /<!SENT-LOCATION-X=([^Y]+)Y=([^!]+)!>/
                             );
                             if (locationMatch) {
-                                contentHtml = `<a href="https://did.lioncommunity.es/map?x=${locationMatch[1]}&y=${locationMatch[2]}" class="location-marker">📍 Ubicación: X=${locationMatch[1]}, Y=${locationMatch[2]}</a>`;
+                                contentHtml = `<a target="_blank" href="https://did.lioncommunity.es/map?x=${locationMatch[1]}&y=${locationMatch[2]}" class="location-marker">📍 Ubicación: X=${locationMatch[1]}, Y=${locationMatch[2]}</a>`;
                             }
                         } else if (content.includes("<!SENT-PAYMENT")) {
                             const paymentMatch = content.match(
@@ -11430,7 +11430,7 @@
                             /<!SENT-LOCATION-X=([^Y]+)Y=([^!]+)!>/
                         );
                         if (match)
-                            contentHtml = `<a href="https://did.lioncommunity.es/map?x=${match[1]}&y=${match[2]}">📍 Ubicación: X=${match[1]}, Y=${match[2]}</a>`;
+                            contentHtml = `<a target="_blank" style="text-decoration: none; color: inherit;" href="https://did.lioncommunity.es/map?x=${match[1]}&y=${match[2]}">📍 Ubicación: X=${match[1]}, Y=${match[2]}</a>`;
                     } else if (contentHtml.includes("<!SENT-PAYMENT")) {
                         const pm = contentHtml.match(
                             /<!SENT-PAYMENT-([^Y]+)!>/
