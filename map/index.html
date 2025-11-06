@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link
+            rel="shortcut icon"
+            href="/images/favicon.svg"
+            type="image/svg+xml"
+        />
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+        />
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+        ></script>
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            #map {
+                height: 100vh;
+                width: 100vw;
+            }
+            /* Control botón para introducir coordenadas */
+            .coord-control {
+                position: absolute;
+                top: 10%;
+                left: 10px;
+                z-index: 1000;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 6px 8px;
+                border-radius: 4px;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+                font-family: sans-serif;
+            }
+            .coord-control button {
+                cursor: pointer;
+                padding: 6px 10px;
+                border: 0;
+                background: #1976d2;
+                color: white;
+                border-radius: 3px;
+            }
+
+            /* Modal simple (mejorado) */
+            #coord-modal {
+                position: fixed;
+                inset: 0;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.45);
+                z-index: 2000;
+                padding: 20px;
+            }
+            #coord-modal .card {
+                background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+                padding: 18px 18px 14px 18px;
+                border-radius: 10px;
+                min-width: 320px;
+                max-width: 420px;
+                width: 100%;
+                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+                font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+                    "Helvetica Neue", Arial;
+            }
+            #coord-modal .card label {
+                display: block;
+                font-size: 13px;
+                color: #374151;
+                margin-bottom: 6px;
+                font-weight: 600;
+            }
+            #coord-modal input[type="number"] {
+                width: 100%;
+                padding: 10px 12px;
+                margin: 0 0 12px 0;
+                box-sizing: border-box;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                font-size: 14px;
+                color: #111827;
+                background: #fff;
+            }
+            #coord-modal input[type="number"]:focus {
+                outline: none;
+                border-color: #60a5fa;
+                box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
+            }
+            #coord-modal .row {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+                margin-top: 6px;
+            }
+            #coord-modal .row button {
+                padding: 8px 12px;
+                border-radius: 8px;
+                border: 1px solid transparent;
+                font-weight: 600;
+                cursor: pointer;
+                background: #f3f4f6;
+                color: #111827;
+            }
+            #coord-modal .row button.primary {
+                background: #2563eb;
+                color: #fff;
+                border-color: #2563eb;
+            }
+            /* Close icon */
+            #coord-modal .close-x {
+                position: absolute;
+                right: -10px;
+                top: -10px;
+                width: 28px;
+                height: 28px;
+                border-radius: 6px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: #374151;
+                background: rgba(0, 0, 0, 0.03);
+            }
+            @media (max-width: 420px) {
+                #coord-modal .card {
+                    min-width: auto;
+                    border-radius: 8px;
+                    padding: 14px;
+                }
+            }
+        </style>
+        <title>
+            Mapa San Andreas — Detective Investigation Division | SASF
+            (CONFIDENCIAL)
+        </title>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script>
+            const center_x = 117.3;
+            const center_y = 172.8;
+            const scale_x = 0.02072;
+            const scale_y = 0.0205;
+
+            CUSTOM_CRS = L.extend({}, L.CRS.Simple, {
+                projection: L.Projection.LonLat,
+                scale: function (zoom) {
+                    return Math.pow(2, zoom);
+                },
+                zoom: function (sc) {
+                    return Math.log(sc) / 0.6931471805599453;
+                },
+                distance: function (pos1, pos2) {
+                    var x_difference = pos2.lng - pos1.lng;
+                    var y_difference = pos2.lat - pos1.lat;
+                    return Math.sqrt(
+                        x_difference * x_difference +
+                            y_difference * y_difference
+                    );
+                },
+                transformation: new L.Transformation(
+                    scale_x,
+                    center_x,
+                    -scale_y,
+                    center_y
+                ),
+                infinite: true,
+            });
+
+            var SateliteStyle = L.tileLayer(
+                    "/mapStyles/styleSatelite/{z}/{x}/{y}.jpg",
+                    {
+                        minZoom: 0,
+                        maxZoom: 8,
+                        noWrap: true,
+                        continuousWorld: false,
+                        attribution: "Online map GTA V",
+                        id: "SateliteStyle map",
+                    }
+                ),
+                AtlasStyle = L.tileLayer(
+                    "/mapStyles/styleAtlas/{z}/{x}/{y}.jpg",
+                    {
+                        minZoom: 0,
+                        maxZoom: 5,
+                        noWrap: true,
+                        continuousWorld: false,
+                        attribution: "Online map GTA V",
+                        id: "styleAtlas map",
+                    }
+                ),
+                GridStyle = L.tileLayer(
+                    "/mapStyles/styleGrid/{z}/{x}/{y}.png",
+                    {
+                        minZoom: 0,
+                        maxZoom: 5,
+                        noWrap: true,
+                        continuousWorld: false,
+                        attribution: "Online map GTA V",
+                        id: "styleGrid map",
+                    }
+                );
+
+            var mymap = L.map("map", {
+                crs: CUSTOM_CRS,
+                minZoom: 1,
+                maxZoom: 5,
+                Zoom: 5,
+                maxNativeZoom: 5,
+                preferCanvas: true,
+                layers: [SateliteStyle],
+                center: [0, 0],
+                zoom: 3,
+            });
+
+            var layersControl = L.control
+                .layers(
+                    {
+                        Satelite: SateliteStyle,
+                        Atlas: AtlasStyle,
+                        Grid: GridStyle,
+                    },
+                    {}
+                )
+                .addTo(mymap);
+
+            // Colores de fondo por estilo de mapa
+            const MAP_BG = {
+                Satelite: "#153e6a", // oscuro para satélite
+                Atlas: "#0fa8d2", // claro para atlas
+                Grid: "#8f8f8f", // sutil azul para la cuadricula
+            };
+
+            // Aplica el color de fondo según la capa base activa
+            function applyMapBackgroundByActiveBase() {
+                const container = mymap.getContainer();
+                // Comprobar qué base layer está activa
+                if (mymap.hasLayer(SateliteStyle)) {
+                    container.style.backgroundColor = MAP_BG.Satelite;
+                    return;
+                }
+                if (mymap.hasLayer(AtlasStyle)) {
+                    container.style.backgroundColor = MAP_BG.Atlas;
+                    return;
+                }
+                if (mymap.hasLayer(GridStyle)) {
+                    container.style.backgroundColor = MAP_BG.Grid;
+                    return;
+                }
+                // fallback
+                container.style.backgroundColor = "";
+            }
+
+            // Cambiar color cuando el usuario selecciona otra base
+            mymap.on("baselayerchange", function (e) {
+                const name = e.name;
+                const container = mymap.getContainer();
+                container.style.backgroundColor = MAP_BG[name] || "";
+            });
+
+            // Aplicar inicialmente según la capa puesta en 'layers' al crear el mapa
+            applyMapBackgroundByActiveBase();
+
+            function customIcon(icon) {
+                return L.icon({
+                    iconUrl: `images/${icon}.webp`,
+                });
+            }
+            // === Marcador único (blip) y UI de coordenadas ===
+            (function () {
+                let singleMarker = null;
+
+                function formatCoord(v) {
+                    return Number(v).toFixed(4);
+                }
+
+                function updateMarkerPopup(m) {
+                    if (!m) return;
+                    const lat = m.getLatLng().lat;
+                    const lng = m.getLatLng().lng;
+                    // Embed coords in data attributes so the button handler can read them reliably
+                    const html = `
+                        <div style="font-family: sans-serif; font-size: 13px;">
+                            <div>X: <strong>${formatCoord(lat)}</strong></div>
+                            <div>Y: <strong>${formatCoord(lng)}</strong></div>
+                            <div style="margin-top:8px;text-align:right;">
+                                <button class="copy-coords" data-lat="${lat}" data-lng="${lng}" style="padding:6px 8px;border:0;background:#1976d2;color:#fff;border-radius:3px;">Copiar</button>
+                            </div>
+                        </div>
+                    `;
+                    m.bindPopup(html);
+                }
+
+                function copyText(text) {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        return navigator.clipboard.writeText(text);
+                    }
+                    // Fallback
+                    const ta = document.createElement("textarea");
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try {
+                        document.execCommand("copy");
+                    } catch (e) {}
+                    document.body.removeChild(ta);
+                    return Promise.resolve();
+                }
+
+                function setMarkerAt(lat, lng, openPopup = true) {
+                    if (!isFinite(lat) || !isFinite(lng)) return;
+                    if (singleMarker) {
+                        singleMarker.setLatLng([lat, lng]);
+                    } else {
+                        singleMarker = L.marker([lat, lng], {
+                            draggable: true,
+                        }).addTo(mymap);
+                        singleMarker.on("dragend", function (e) {
+                            updateMarkerPopup(singleMarker);
+                            singleMarker.openPopup();
+                        });
+                        singleMarker.on("mouseover", function () {
+                            singleMarker.openPopup();
+                        });
+                    }
+                    updateMarkerPopup(singleMarker);
+                    if (openPopup) singleMarker.openPopup();
+                    mymap.panTo([lat, lng]);
+                }
+
+                // Click en mapa: poner o mover blip
+                mymap.on("click", function (e) {
+                    setMarkerAt(e.latlng.lat, e.latlng.lng, true);
+                });
+
+                // Delegated handler for copy buttons inside popups (more robust)
+                document.addEventListener("click", function (ev) {
+                    const btn =
+                        ev.target.closest && ev.target.closest(".copy-coords");
+                    if (!btn) return;
+                    ev.preventDefault();
+                    // Read coords from data attributes (set when popup content was created)
+                    const lat = Number(btn.getAttribute("data-lat"));
+                    const lng = Number(btn.getAttribute("data-lng"));
+                    if (!isFinite(lat) || !isFinite(lng)) {
+                        console.warn("Coords not available to copy");
+                        return;
+                    }
+                    const text = `${formatCoord(lat)}, ${formatCoord(lng)}`;
+                    copyText(text)
+                        .then(function () {
+                            const original = btn.textContent;
+                            btn.textContent = "Copiado";
+                            setTimeout(
+                                () => (btn.textContent = original),
+                                1500
+                            );
+                        })
+                        .catch(function (err) {
+                            console.error("Copy failed", err);
+                            alert(
+                                "No se pudo copiar al portapapeles. Usa Ctrl+C sobre el texto."
+                            );
+                        });
+                });
+
+                // Leer parámetros URL ?x=...&y=...
+                function getUrlParams() {
+                    const params = new URLSearchParams(window.location.search);
+                    const x = params.get("x");
+                    const y = params.get("y");
+                    return {
+                        x: x === null ? null : Number(x),
+                        y: y === null ? null : Number(y),
+                    };
+                }
+
+                // Control simple para abrir modal
+                const coordControl = L.DomUtil.create("div", "coord-control");
+                coordControl.innerHTML =
+                    '<button id="open-coord-modal">Ir a coordenadas</button>';
+                // Evitar que el control interfiera con el mapa
+                L.DomEvent.disableClickPropagation(coordControl);
+                mymap.getContainer().appendChild(coordControl);
+
+                // Modal HTML
+                const modal = document.createElement("div");
+                modal.id = "coord-modal";
+                modal.innerHTML = `
+                    <div class="card">
+                        <div style="position:relative;">
+                            <div class="close-x" id="coord-close" title="Cerrar">✕</div>
+                            <div style="padding-right:16px;">
+                                <label for="coord-x">Lng (X)</label>
+                                <input id="coord-x" type="number" step="0.0001" placeholder="Ej: 117.3" />
+                                <label for="coord-y">Lat (Y)</label>
+                                <input id="coord-y" type="number" step="0.0001" placeholder="Ej: 172.8" />
+                                <div class="row">
+                                    <button id="coord-cancel">Cancelar</button>
+                                    <button id="coord-go" class="primary">Ir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                document
+                    .getElementById("open-coord-modal")
+                    .addEventListener("click", function () {
+                        modal.style.display = "flex";
+                        // prefill with current marker coords if exist
+                        if (singleMarker) {
+                            const ll = singleMarker.getLatLng();
+                            document.getElementById("coord-x").value = ll.lng;
+                            document.getElementById("coord-y").value = ll.lat;
+                        } else {
+                            document.getElementById("coord-x").value = "";
+                            document.getElementById("coord-y").value = "";
+                        }
+                    });
+                document
+                    .getElementById("coord-cancel")
+                    .addEventListener("click", function () {
+                        modal.style.display = "none";
+                    });
+                // Close icon handler
+                document
+                    .getElementById("coord-close")
+                    .addEventListener("click", function () {
+                        modal.style.display = "none";
+                    });
+                document
+                    .getElementById("coord-go")
+                    .addEventListener("click", function () {
+                        const x = Number(
+                            document.getElementById("coord-x").value
+                        );
+                        const y = Number(
+                            document.getElementById("coord-y").value
+                        );
+                        if (!isFinite(x) || !isFinite(y)) {
+                            alert("Introduce valores numéricos válidos.");
+                            return;
+                        }
+                        // Interpretamos x como lng y y como lat
+                        setMarkerAt(y, x, true);
+                        modal.style.display = "none";
+                    });
+
+                // Si la URL contiene parámetros, posicionar al cargar
+                window.addEventListener("load", function () {
+                    const p = getUrlParams();
+                    if (isFinite(p.x) && isFinite(p.y)) {
+                        // Interpretamos x -> lng, y -> lat
+                        setMarkerAt(p.y, p.x, false);
+                        // ajustar vista
+                        if (singleMarker)
+                            mymap.setView(
+                                singleMarker.getLatLng(),
+                                mymap.getZoom()
+                            );
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>
