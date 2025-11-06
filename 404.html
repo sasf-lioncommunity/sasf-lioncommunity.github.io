@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link
+            rel="shortcut icon"
+            href="images/favicon.svg"
+            type="image/svg+xml"
+        />
+        <title>404 — Página no encontrada | SASF DID</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: "Courier New", monospace;
+                background: linear-gradient(135deg, #0b1220 0%, #111826 100%);
+                color: #e8f2ff;
+                padding: 24px;
+            }
+            .card {
+                max-width: 820px;
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.02),
+                    rgba(255, 255, 255, 0.01)
+                );
+                border: 1px solid rgba(47, 137, 255, 0.12);
+                padding: 28px;
+                border-radius: 12px;
+                box-shadow: 0 15px 40px rgba(15, 20, 35, 0.6);
+                text-align: center;
+            }
+            h1 {
+                color: #ffdfe6;
+                font-size: 36px;
+                margin-bottom: 6px;
+            }
+            p {
+                color: #d6e9ff;
+                margin-bottom: 12px;
+            }
+            .muted {
+                color: #9fb7d9;
+            }
+            img {
+                max-width: 180px;
+                border-radius: 8px;
+                border: 2px solid #2f89ff;
+                margin-bottom: 14px;
+            }
+            a.btn {
+                display: inline-block;
+                padding: 10px 14px;
+                background: #2f89ff;
+                color: #fff;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 700;
+                margin: 6px;
+            }
+            .conf {
+                background: #a00b1e;
+                color: #fff;
+                padding: 8px;
+                border-radius: 6px;
+                display: inline-block;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <img src="images/did.webp" alt="DID" />
+            <h1>404 — Página no encontrada</h1>
+            <p class="muted">
+                El recurso solicitado no existe o no está disponible. El sistema
+                registra intentos de acceso no autorizados.
+            </p>
+            <div>
+                <a class="btn" href="index.html">Inicio</a>
+            </div>
+            <div class="conf">
+                CONFIDENCIAL — Uso restringido a agentes del SASF
+            </div>
+        </div>
+    </body>
+</html>

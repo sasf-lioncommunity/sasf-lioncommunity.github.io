@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link
+            rel="shortcut icon"
+            href="images/favicon.svg"
+            type="image/svg+xml"
+        />
+        <title>
+            DID — Detective Investigation Division | SASF (CONFIDENCIAL)
+        </title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            html,
+            body {
+                height: 100%;
+            }
+            body {
+                font-family: "Courier New", monospace;
+                background: linear-gradient(135deg, #0f1626 0%, #121827 100%);
+                color: #e6eef8;
+                padding: 28px;
+                -webkit-font-smoothing: antialiased;
+            }
+            .container {
+                max-width: 1100px;
+                margin: 0 auto;
+            }
+            .header {
+                background: linear-gradient(90deg, #071129 0%, #0e2846 100%);
+                border: 2px solid #2f89ff;
+                border-radius: 12px;
+                padding: 20px;
+                display: flex;
+                gap: 20px;
+                align-items: center;
+                box-shadow: 0 10px 30px rgba(47, 137, 255, 0.08);
+            }
+            .logo {
+                width: 96px;
+                height: 96px;
+                border-radius: 8px;
+                object-fit: cover;
+                border: 2px solid #2f89ff;
+            }
+            .header-info {
+                flex: 1;
+            }
+            .header-info h1 {
+                color: #cfe8ff;
+                font-size: 20px;
+                margin-bottom: 4px;
+            }
+            .header-info p {
+                color: #b7cbe8;
+                font-size: 13px;
+            }
+            .classification {
+                background: #c8102e;
+                color: #fff;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-weight: 700;
+            }
+            .lead {
+                margin: 18px 0 8px;
+                color: #dbeeff;
+            }
+            .card {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(47, 137, 255, 0.12);
+                padding: 16px;
+                border-radius: 10px;
+                margin-top: 14px;
+            }
+            h2 {
+                color: #9fd0ff;
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+            p {
+                line-height: 1.5;
+                color: #d6e9ff;
+            }
+            ul {
+                padding-left: 18px;
+                margin-top: 8px;
+            }
+            li {
+                margin: 6px 0;
+            }
+            .muted {
+                color: #94a8c8;
+                font-size: 13px;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 12px;
+            }
+            .btn {
+                display: inline-block;
+                padding: 8px 12px;
+                background: #2f89ff;
+                color: white;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 700;
+                margin-top: 10px;
+            }
+            footer {
+                margin-top: 22px;
+                color: #97abcf;
+                font-size: 12px;
+                text-align: center;
+            }
+            .notice {
+                background: rgba(200, 16, 46, 0.06);
+                border-left: 4px solid #c8102e;
+                padding: 10px;
+                border-radius: 6px;
+                color: #ffdfe6;
+                margin-top: 12px;
+            }
+            @media (max-width: 600px) {
+                .header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                .logo {
+                    width: 72px;
+                    height: 72px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header class="header">
+                <img class="logo" src="images/did.webp" alt="DID - SASF" />
+                <div class="header-info">
+                    <h1>Detective Investigation Division — SASF</h1>
+                    <p class="muted">
+                        Unidad: DID · San Andreas State Forces • Uso interno y
+                        altamente confidencial
+                    </p>
+                </div>
+                <div class="classification">CONFIDENCIAL</div>
+            </header>
+
+            <main>
+                <p class="lead">
+                    Portal de información operativa del DID. Acceso restringido
+                    a agentes autorizados del SASF. El uso, copia o difusión de
+                    la información contenida en esta página está regulado y
+                    supervisado.
+                </p>
+
+                <div class="card">
+                    <h2>Misión</h2>
+                    <p>
+                        El Detective Investigation Division (DID) es la unidad
+                        encargada de la investigación táctica y analítica de
+                        amenazas internas y externas que afectan la seguridad
+                        del Estado de San Andreas. Nuestra misión es recopilar,
+                        analizar y gestionar información operativa para apoyar
+                        decisiones tácticas y judiciales.
+                    </p>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h2>Estructura</h2>
+                        <ul>
+                            <li>Antigang Unit</li>
+                            <li>Economics & Frauds Subdivision</li>
+                            <li>Narcotics & Cybercrime Unit</li>
+                            <li>Violent Behaviours Unit</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h2>Protocolos</h2>
+                        <p class="muted">
+                            Los procedimientos operativos del DID se rigen por
+                            normativa interna. A modo de resumen:
+                        </p>
+                        <ul>
+                            <li>
+                                Clasificación y manejo de evidencia digital.
+                            </li>
+                            <li>
+                                Canales cifrados obligatorios para
+                                comunicaciones operativas.
+                            </li>
+                            <li>
+                                Control de acceso y registro de auditoría para
+                                cualquier consulta.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h2>Informes y evidencias</h2>
+                        <p>
+                            Los informes se generan en formato interno y sólo se
+                            publican en repositorios auditados. Para solicitar
+                            acceso o enviar evidencia, use los canales oficiales
+                            internos del SASF.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h2>Contacto (operativo)</h2>
+                        <p class="muted">
+                            Oficina central DID — Comunicación segura requerida.
+                        </p>
+                        <ul>
+                            <li>DID Coordinator - Ethan Moore</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="notice">
+                    <strong>AVISO:</strong> Esta página contiene material
+                    sensible. Cualquier acceso no autorizado será registrado y
+                    reportado a la cadena de mando. Si ha llegado aquí por
+                    error, cierre la sesión y notifique al equipo de seguridad.
+                </div>
+
+                <footer>
+                    DID · San Andreas State Forces — Página confidencial para
+                    agentes autorizados • &copy; SASF
+                </footer>
+            </main>
+        </div>
+    </body>
+</html>
